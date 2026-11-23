@@ -1,0 +1,11 @@
+[
+  { "text": "megnézendő: Parasite", "expect": "11.01 Filmek" },
+  { "text": "Zsófi szülinapjára jó lenne egy Moleskine és valami jó tea", "expect": "32.01 Ajándékötletek" },
+  { "text": "https://www.theverge.com/2026/ai-agents-explained", "expect": "13.01 Linkek" },
+  { "text": "MVM áramszámla november, 14 320 Ft, befizetési határidő dec 10", "expect": "21.01 Számlák" },
+  { "text": "holnap 9-kor fogorvos, vinni a TAJ kártyát", "expect": "22.01 Egészség" },
+  { "text": "kéne egy app ami a hűtő tartalmából receptet ajánl", "expect": "12.01 Ötletek" },
+  { "text": "befizetni a fogorvosi számlát péntekig", "expect": "31.01 Teendők" },
+  { "text": "Harari Nexus – Péter ajánlotta, szerinte jobb mint a Sapiens", "expect": "11.02 Könyvek" },
+  { "text": "a Dűne 2-t Andrisnak, ha nincs még meg neki Blu-rayen", "expect": "32.01 Ajándékötletek" }
+]

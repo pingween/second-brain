@@ -1,0 +1,11 @@
+{
+  "_comment": "Example router index. Replace with the real JD 00.00 entries once they exist.",
+  "11.01 Filmek": "Megnézendő vagy megnézett filmek, sorozatok, ajánlások",
+  "11.02 Könyvek": "Olvasandó vagy olvasott könyvek, idézetek könyvekből",
+  "12.01 Ötletek": "Saját ötletek, projektötletek, gondolatok",
+  "13.01 Linkek": "Cikkek, videók, weboldalak későbbi elolvasásra",
+  "21.01 Számlák": "Számlák, nyugták, közüzemi és vásárlási bizonylatok",
+  "22.01 Egészség": "Orvosi leletek, receptek, időpontok, egészségügyi papírok",
+  "31.01 Teendők": "Elintézendő feladatok, határidők, emlékeztetők",
+  "32.01 Ajándékötletek": "Ajándékötletek konkrét embereknek"
+}
