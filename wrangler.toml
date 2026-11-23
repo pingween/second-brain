@@ -1,0 +1,24 @@
+name = "second-brain-bot"
+main = "src/index.ts"
+compatibility_date = "2026-11-01"
+
+[ai]
+binding = "AI"
+
+[observability]
+enabled = true
+
+[vars]
+# Your own Telegram user ID (e.g. from @userinfobot). Only this user is served.
+ALLOWED_USER_ID = ""
+# Drive file ID of the inbox markdown (e.g. "03 Inbox/telegram-inbox.md").
+INBOX_FILE_ID = ""
+# AI Gateway with Unified Billing enabled (Cloudflare dashboard → AI → AI Gateway).
+AI_GATEWAY_ID = "second-brain"
+# Check the exact name in the AI Gateway model catalog.
+CLAUDE_MODEL = "anthropic/claude-haiku-5-5"
+TIMEZONE = "Europe/Budapest"
+
+# Secrets — set with `npx wrangler secret put <NAME>`, never commit them:
+#   TELEGRAM_BOT_TOKEN, TELEGRAM_WEBHOOK_SECRET,
+#   GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REFRESH_TOKEN
