@@ -1,18 +1,13 @@
 {
-  "name": "second-brain-bot",
-  "version": "0.1.0",
+  "name": "second-brain",
   "private": true,
-  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "scripts/*"
+  ],
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
-    "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --no-warnings --test test/*.test.ts",
-    "google-token": "node scripts/get-google-refresh-token.mjs"
-  },
-  "devDependencies": {
-    "@cloudflare/workers-types": "^5.20261123.1",
-    "typescript": "^5.9.3",
-    "wrangler": "^4.166.0"
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm test --workspaces --if-present"
   }
 }
