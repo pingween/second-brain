@@ -18,10 +18,10 @@ export async function triageMessage(env: Env, text: string): Promise<Triage | nu
   const result: unknown = await (env.AI as any).run(
     env.CLAUDE_MODEL,
     {
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: text },
-      ],
+      // Claude models take the Anthropic Messages format: the system prompt is a
+      // top-level field, not a message with role "system".
+      system: SYSTEM_PROMPT,
+      messages: [{ role: "user", content: text }],
       max_tokens: 300,
     },
     { gateway: { id: env.AI_GATEWAY_ID } },

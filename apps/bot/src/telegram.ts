@@ -17,6 +17,24 @@ export function sendMessage(env: Env, chatId: number, text: string, replyTo?: nu
   });
 }
 
+/**
+ * Points the bot's webhook at `webhookUrl`, using the Worker's own secrets,
+ * so the bot token never has to leave Cloudflare. Returns Telegram's JSON answer.
+ */
+export async function setWebhook(env: Env, webhookUrl: string): Promise<unknown> {
+  const res = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/setWebhook`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      url: webhookUrl,
+      secret_token: env.TELEGRAM_WEBHOOK_SECRET,
+      allowed_updates: ["message"],
+      drop_pending_updates: true,
+    }),
+  });
+  return res.json();
+}
+
 export function sendTyping(env: Env, chatId: number) {
   return call(env, "sendChatAction", { chat_id: chatId, action: "typing" });
 }

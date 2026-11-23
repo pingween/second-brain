@@ -15,8 +15,8 @@ ALLOWED_USER_ID = ""
 INBOX_FILE_ID = ""
 # AI Gateway with Unified Billing enabled (Cloudflare dashboard → AI → AI Gateway).
 AI_GATEWAY_ID = "second-brain"
-# Check the exact name in the AI Gateway model catalog.
-CLAUDE_MODEL = "anthropic/claude-haiku-5-5"
+# Model ID as listed in the AI Gateway model catalog (dots, not dashes).
+CLAUDE_MODEL = "anthropic/claude-haiku-5.5"
 TIMEZONE = "Europe/Budapest"
 
 # Secrets — set with `npx wrangler secret put <NAME>`, never commit them:

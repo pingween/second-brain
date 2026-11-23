@@ -1,5 +1,5 @@
 import type { Env, TgMessage, TgUpdate } from "./types.ts";
-import { secretMatches, sendMessage, sendTyping } from "./telegram.ts";
+import { secretMatches, sendMessage, sendTyping, setWebhook } from "./telegram.ts";
 import { triageMessage } from "./llm.ts";
 import { readTextFile, writeTextFile } from "./drive.ts";
 import { appendEntry, fallbackTriage, formatInboxEntry, formatTimestamp } from "./format.ts";
@@ -9,11 +9,17 @@ export default {
     const url = new URL(req.url);
 
     if (req.method === "GET" && url.pathname === "/health") return new Response("ok");
-    if (req.method !== "POST" || url.pathname !== "/telegram") {
+    if (req.method !== "POST" || (url.pathname !== "/telegram" && url.pathname !== "/setup-webhook")) {
       return new Response("not found", { status: 404 });
     }
     if (!secretMatches(req.headers.get("X-Telegram-Bot-Api-Secret-Token"), env.TELEGRAM_WEBHOOK_SECRET)) {
       return new Response("forbidden", { status: 403 });
+    }
+
+    // One-off: register this Worker's /telegram URL as the bot's webhook.
+    if (url.pathname === "/setup-webhook") {
+      const result = await setWebhook(env, `${url.origin}/telegram`);
+      return Response.json(result);
     }
 
     const update = (await req.json()) as TgUpdate;

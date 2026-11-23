@@ -22,7 +22,16 @@ Telegram ──webhook──▶ Worker /telegram
 ### 2. Cloudflare AI Gateway
 1. Dashboard → **AI → AI Gateway** → új gateway `second-brain` néven.
 2. Kapcsold be az **authentikációt** és a **Unified Billinget**, tölts fel egy kis kreditet.
-3. A modellkatalógusban nézd meg a Claude-modell pontos nevét, és ha eltér, írd át a `CLAUDE_MODEL`-t. Itt azt is nézd meg, szerepel-e a Jev.
+3. A modell ID-ja a [katalógus](https://developers.cloudflare.com/ai/models/) szerint `anthropic/claude-haiku-5.5` (pontokkal, nem kötőjellel). Ez a modell Anthropic Messages formátumot vár, ezért a rendszerprompt felső szintű `system` mező.
+4. A TypeSafe Jev (`typesafe/jev`, ill. `typesafe/jev-1.14.0`) third-party modellként szerepel a katalógusban, így az AI bindingen át Unified Billinggel hívható.
+
+API-ból (token: AI Gateway Edit):
+```bash
+curl "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT_ID/ai-gateway/gateways" \
+  -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H 'Content-Type: application/json' \
+  -d '{"id":"second-brain","authentication":true,"byok_only":false,"workers_ai_billing_mode":"unified",
+       "collect_logs":true,"cache_ttl":0,"cache_invalidate_on_update":true,"rate_limiting_interval":0,"rate_limiting_limit":0}'
+```
 
 ### 3. Google Drive (OAuth)
 Személyes Gmail-es Drive-on a service account nem tud fájlt birtokolni (a bináris feltöltésnél ez gond lenne), ezért a Worker a te nevedben, OAuth refresh tokennel ír.
@@ -50,12 +59,14 @@ npm run deploy
 ```
 
 ### 5. Webhook beállítása
+A Worker maga regisztrálja a webhookot a saját tokenjével, így a bot tokenjének nem kell elhagynia a Cloudflare-t:
 ```bash
-curl "https://api.telegram.org/bot<TOKEN>/setWebhook" \
-  --data-urlencode "url=https://second-brain-bot.<accountod>.workers.dev/telegram" \
-  --data-urlencode "secret_token=<WEBHOOK_SECRET>" \
-  --data-urlencode 'allowed_updates=["message"]'
+curl -X POST "https://second-brain-bot.<accountod>.workers.dev/setup-webhook" \
+  -H "X-Telegram-Bot-Api-Secret-Token: <WEBHOOK_SECRET>"
 ```
+A válasz a Telegram `setWebhook` válasza (`{"ok":true,...}`).
+
+A titkokat a `wrangler secret put` helyett a dashboardon is megadhatod: Workers & Pages → `second-brain-bot` → Settings → Variables and Secrets → Add → típus: **Secret**.
 
 Küldj a botnak egy üzenetet, pl. „megnézendő: Parasite”. Pár másodperc múlva válaszol, és a bejegyzés megjelenik a `telegram-inbox.md`-ben.
 
