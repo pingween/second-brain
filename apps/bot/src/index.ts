@@ -2,6 +2,7 @@ import type { Env, TgMessage, TgUpdate } from "./types.ts";
 import { secretMatches, sendMessage, sendTyping, setWebhook } from "./telegram.ts";
 import { triageMessage } from "./llm.ts";
 import { readTextFile, writeTextFile } from "./drive.ts";
+import { homePage, privacyPage } from "./pages.ts";
 import { appendEntry, fallbackTriage, formatInboxEntry, formatTimestamp } from "./format.ts";
 
 export default {
@@ -9,6 +10,11 @@ export default {
     const url = new URL(req.url);
 
     if (req.method === "GET" && url.pathname === "/health") return new Response("ok");
+    if (req.method === "GET" && (url.pathname === "/" || url.pathname === "/privacy")) {
+      return new Response(url.pathname === "/" ? homePage : privacyPage, {
+        headers: { "Content-Type": "text/html; charset=utf-8" },
+      });
+    }
     if (req.method !== "POST" || (url.pathname !== "/telegram" && url.pathname !== "/setup-webhook")) {
       return new Response("not found", { status: 404 });
     }
