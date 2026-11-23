@@ -23,6 +23,9 @@ export async function triageMessage(env: Env, text: string): Promise<Triage | nu
       system: SYSTEM_PROMPT,
       messages: [{ role: "user", content: text }],
       max_tokens: 300,
+      // Haiku 5.5 thinks adaptively by default; the thinking block would eat the
+      // token budget and cut the JSON short. A short triage doesn't need it.
+      thinking: { type: "disabled" },
     },
     { gateway: { id: env.AI_GATEWAY_ID } },
   );

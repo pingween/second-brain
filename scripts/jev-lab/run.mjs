@@ -2,6 +2,7 @@
 // Calls the Cloudflare REST API through the second-brain AI Gateway (Unified Billing).
 //
 //   CLOUDFLARE_ACCOUNT_ID=... CLOUDFLARE_API_TOKEN=... npm run run -w scripts/jev-lab [-- --model typesafe/jev-1.14.0]
+//   (--model anthropic/claude-sonnet-5.5 runs the same cases on Claude for comparison)
 //
 // The token needs Workers AI Read+Edit. Edit targets.json / cases.json to experiment.
 import { readFileSync } from "node:fs";
@@ -43,12 +44,51 @@ async function route(text) {
   });
   const body = await res.json();
   if (!res.ok || body.success === false) throw new Error(`${res.status} ${JSON.stringify(body.errors ?? body)}`);
-  return { answer: (body.result ?? body).answers.target, usage: (body.result ?? body).usage, ms: Date.now() - t0 };
+  // REST wraps the model output: { result: { state, result: { answers, usage } } }
+  const out = body.result?.result ?? body.result ?? body;
+  return { answer: out.answers.target, usage: out.usage, ms: Date.now() - t0 };
+}
+
+// Same question to a Claude model, for comparison. It has no calibrated
+// probabilities, so it reports its own confidence.
+async function routeClaude(text) {
+  const t0 = Date.now();
+  const list = Object.entries(targets).map(([k, v]) => `- ${k}: ${v}`).join("\n");
+  const res = await fetch(`https://api.cloudflare.com/client/v4/accounts/${account}/ai/v1/messages`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+      "cf-aig-gateway-id": gateway,
+    },
+    body: JSON.stringify({
+      model,
+      max_tokens: 200,
+      // Claude 5.5 models think adaptively by default, which can use up max_tokens.
+      thinking: { type: "disabled" },
+      system:
+        "Egy személyes jegyzetrendszerbe Telegramon beküldött üzenetet kell a megfelelő mappába sorolnod.\n" +
+        `Mappák:\n${list}\n\n` +
+        'Válaszolj KIZÁRÓLAG JSON-nal: {"choice": "<mappa pontos neve>", "confidence": <0..1>}',
+      messages: [{ role: "user", content: text }],
+    }),
+  });
+  const body = await res.json();
+  if (!res.ok || body.type === "error" || body.success === false) throw new Error(`${res.status} ${JSON.stringify(body)}`);
+  const raw = body.content?.find((c) => c.type === "text")?.text ?? "";
+  const answer = JSON.parse(raw.slice(raw.indexOf("{"), raw.lastIndexOf("}") + 1));
+  return { answer, usage: body.usage, ms: Date.now() - t0 };
 }
 
 let hits = 0;
 for (const c of cases) {
-  const { answer, usage, ms } = await route(c.text);
+  let answer, usage, ms;
+  try {
+    ({ answer, usage, ms } = await (model.startsWith("anthropic/") ? routeClaude(c.text) : route(c.text)));
+  } catch (err) {
+    console.log(`💥 ${c.text}\n   hiba: ${err.message}`);
+    continue;
+  }
   const ok = answer.choice === c.expect;
   hits += ok;
   const top = Object.entries(answer.probabilities ?? {})
