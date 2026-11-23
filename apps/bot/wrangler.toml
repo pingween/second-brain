@@ -12,7 +12,7 @@ enabled = true
 # Your own Telegram user ID (e.g. from @userinfobot). Only this user is served.
 ALLOWED_USER_ID = "5641875854"
 # Drive file ID of the inbox markdown (e.g. "03 Inbox/telegram-inbox.md").
-INBOX_FILE_ID = ""
+INBOX_FILE_ID = "1iNcmuLIOAftvYMBI18dp6KkDvzBMfgbx"
 # AI Gateway with Unified Billing enabled (Cloudflare dashboard → AI → AI Gateway).
 AI_GATEWAY_ID = "second-brain"
 # Model ID as listed in the AI Gateway model catalog (dots, not dashes).
